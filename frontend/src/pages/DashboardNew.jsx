@@ -136,12 +136,13 @@ export default function DashboardNew() {
               value={stats ? `${stats.avg_confidence.toFixed(1)}%` : '0%'}
               color="#10B981"
             />
-            <StatCard
+            {/* This Week card disabled */}
+            {/* <StatCard
               icon={Clock}
               label="This Week"
               value={recentAnalyses.length}
               color="#F59E0B"
-            />
+            /> */}
           </div>
 
           {/* Main Grid Layout */}

@@ -130,7 +130,11 @@ export default function AnalysisNew() {
       canvas.height = video.videoHeight
       ctx.drawImage(video, 0, 0)
       canvas.toBlob((blob) => {
-        const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' })
+        // Generate unique filename with timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
+        const randomSuffix = Math.floor(Math.random() * 10000)
+        const filename = `captured_${timestamp}_${randomSuffix}.jpg`
+        const file = new File([blob], filename, { type: 'image/jpeg' })
         handleFileSelect(file)
         stopCamera()
       }, 'image/jpeg', 0.8)

@@ -177,7 +177,11 @@ export default function Dashboard() {
 
     const response = await fetch(currentImageData)
     const blob = await response.blob()
-    const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' })
+    // Generate unique filename with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
+    const randomSuffix = Math.floor(Math.random() * 10000)
+    const filename = `captured_${timestamp}_${randomSuffix}.jpg`
+    const file = new File([blob], filename, { type: 'image/jpeg' })
     performAnalysis(file)
   }
 

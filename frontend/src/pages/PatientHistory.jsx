@@ -37,10 +37,21 @@ export default function PatientHistory() {
 
   const fetchAnalyses = async () => {
     try {
+      // Get patient data from localStorage
+      const patientData = localStorage.getItem('patient')
+      if (!patientData) {
+        setError('Patient not logged in')
+        return
+      }
+      
+      const patient = JSON.parse(patientData)
+      
       const params = new URLSearchParams()
       if (searchTerm) params.append('search', searchTerm)
       if (dateFilter) params.append('start_date', dateFilter)
       if (diagnosisFilter) params.append('diagnosis', diagnosisFilter)
+      // Add patient email to filter records
+      params.append('patient_email', patient.email)
 
       const response = await fetch(`http://localhost:5001/api/history?${params}`, {
         credentials: 'include'
@@ -48,7 +59,7 @@ export default function PatientHistory() {
 
       if (response.ok) {
         const data = await response.json()
-        setAnalyses(data.analyses || [])
+        setAnalyses(data.history || [])
       } else {
         setError('Failed to load analysis history')
       }

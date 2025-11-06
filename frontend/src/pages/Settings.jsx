@@ -529,7 +529,16 @@ export default function Settings() {
                           <button 
                             onClick={async () => {
                               try {
-                                const response = await fetch('http://localhost:5001/api/history/export', {
+                                // Get patient data for patient settings
+                                const patientData = localStorage.getItem('patient')
+                                const patientEmail = patientData ? JSON.parse(patientData).email : null
+                                
+                                let url = 'http://localhost:5001/api/history/export'
+                                if (patientEmail) {
+                                  url += `?patient_email=${encodeURIComponent(patientEmail)}`
+                                }
+                                
+                                const response = await fetch(url, {
                                   credentials: 'include'
                                 });
                                 
@@ -569,7 +578,16 @@ export default function Settings() {
                           <button
                             onClick={async () => {
                               try {
-                                const response = await fetch('http://localhost:5001/api/history/stats', {
+                                // Get patient data for patient settings
+                                const patientData = localStorage.getItem('patient')
+                                const patientEmail = patientData ? JSON.parse(patientData).email : null
+                                
+                                let url = 'http://localhost:5001/api/history/stats'
+                                if (patientEmail) {
+                                  url += `?patient_email=${encodeURIComponent(patientEmail)}`
+                                }
+                                
+                                const response = await fetch(url, {
                                   credentials: 'include'
                                 });
                                 

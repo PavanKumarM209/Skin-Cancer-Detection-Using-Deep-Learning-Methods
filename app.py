@@ -725,17 +725,22 @@ def analyze():
         if file.filename == '':
             return jsonify({'error': 'No image selected'}), 400
 
-        # Validate file type
-        filename = secure_filename(file.filename)
+        # Validate file type and generate unique filename
+        original_filename = secure_filename(file.filename)
         allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
-        file_ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
+        file_ext = original_filename.rsplit('.', 1)[1].lower() if '.' in original_filename else ''
         if file_ext not in allowed_extensions:
             return jsonify({
                 'error': 'Invalid file format',
                 'message': 'Please upload a valid image file (JPG, PNG, JPEG, GIF, BMP, or WEBP)'
             }), 400
 
-        # Save uploaded file
+        # Generate unique filename with timestamp and random number
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        random_suffix = str(int(np.random.rand() * 10000))
+        filename = f"{timestamp}_{random_suffix}.{file_ext}"
+        
+        # Save uploaded file with unique filename
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
 
@@ -1079,9 +1084,11 @@ def capture():
         image_data = image_data.split(',')[1]  # Remove data:image/jpeg;base64, prefix
         image_bytes = base64.b64decode(image_data)
 
-        # Save image
+        # Save image with unique filename
         image = Image.open(BytesIO(image_bytes))
-        filename = f'capture_{int(np.random.rand() * 1000000)}.jpg'
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        random_suffix = str(int(np.random.rand() * 10000))
+        filename = f'capture_{timestamp}_{random_suffix}.jpg'
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         image.save(filepath)
 
