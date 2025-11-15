@@ -293,9 +293,9 @@ None currently reported. The application is stable and production-ready.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 👥 Authors
+## 👥 Author
 
-- **Priyanshu** - *Initial work* - [priyanshu-3](https://github.com/priyanshu-3)
+- **Priyanshu** - [priyanshu-3](https://github.com/priyanshu-3)
 
 ## 🙏 Acknowledgments
 
@@ -323,7 +323,7 @@ If you find this project useful, please consider giving it a star ⭐
 
 ---
 
-**Made with ❤️ for better healthcare**
+
 
 *Last Updated: October 2025*
 *Version: 2.0.0*
