@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: skin-cancer-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-skin_cancer_db}
+      POSTGRES_USER: ${POSTGRES_USER:-skin_cancer_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-SkinCancer2024SecurePass}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - skin-cancer-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-skin_cancer_user} -d ${POSTGRES_DB:-skin_cancer_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: skin-cancer-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-skin_cancer_user}:${POSTGRES_PASSWORD:-SkinCancer2024SecurePass}@postgres:5432/${POSTGRES_DB:-skin_cancer_db}
+      ROBOFLOW_API_KEY: ${ROBOFLOW_API_KEY}
+      WORKSPACE: ${WORKSPACE}
+      PROJECT: ${PROJECT}
+      VERSION: ${VERSION:-1}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key-change-in-production}
+      FLASK_ENV: production
+      PORT: 5001
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./static/uploads:/app/static/uploads
+      - ./instance:/app/instance
+    networks:
+      - skin-cancer-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/history/stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: skin-cancer-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    networks:
+      - skin-cancer-network
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # pgAdmin (Optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: skin-cancer-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@skincare.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - skin-cancer-network
+    depends_on:
+      - postgres
+    profiles:
+      - dev
+
+networks:
+  skin-cancer-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
