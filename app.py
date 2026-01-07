@@ -299,6 +299,13 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# PostgreSQL-specific optimizations
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,  # Verify connections before using them
+    'pool_recycle': 300,    # Recycle connections after 5 minutes
+    'pool_size': 10,        # Number of connections to maintain
+    'max_overflow': 20      # Maximum overflow connections
+}
 
 # Session configuration
 app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
@@ -321,6 +328,10 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+# Initialize Flask-Migrate for database migrations
+from flask_migrate import Migrate
+migrate = Migrate(app, db)
 
 # Initialize Flask-Mail
 mail = Mail(app)

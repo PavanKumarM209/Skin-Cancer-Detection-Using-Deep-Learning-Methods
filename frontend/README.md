@@ -1,25 +1,10 @@
-# Skin Cancer Detection - React Frontend
+# Frontend - React Application
 
-Modern React frontend with Clerk authentication for the AI-powered Skin Cancer Detection system.
-
-## Features
-
-- ✅ **Clerk Authentication** - Secure sign-in/sign-up with email and OAuth
-- ✅ **Image Upload** - Drag-and-drop or camera capture
-- ✅ **Real-time Analysis** - AI predictions with uncertainty quantification
-- ✅ **XGBoost Ensemble** - Multiple model predictions combined
-- ✅ **Explainable AI** - LIME, SHAP, and saliency map visualizations
-- ✅ **Responsive Design** - Beautiful UI with Tailwind CSS
-- ✅ **Protected Routes** - Role-based access control
+React frontend for the Skin Cancer Detection System.
 
 ## Tech Stack
 
-- **React 18** - UI framework
-- **Vite** - Build tool and dev server
-- **Clerk** - Authentication and user management
-- **React Router** - Client-side routing
-- **Tailwind CSS** - Utility-first styling
-- **Lucide React** - Beautiful icons
+React 18 • Vite • React Router • Tailwind CSS • Lucide Icons
 
 ## Quick Start
 
